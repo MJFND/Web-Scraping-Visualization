@@ -142,19 +142,23 @@
 			j = 0;
 				
 			// Receiving from the socket	
-			source.addEventListener('message', function(e) {
+		source.addEventListener('message', function(e) {
 				a = JSON.parse(e.data);
-		   if(typeof a.created_at != 'undefined' )
+		      if(typeof a.created_at != 'undefined' )
 			{	
 								
 			  temp_date[i] = Date.parse(a.created_at);
 			  i++; 
-							
+			  
+			  // Comparing current date with the previous values
+			  // If found increment the counter
 			  if(temp_date[i-1]==temp_date[i-2] || temp_date[i-1]==temp_date[i-3])
 					{
 					plot_date[j] = temp_date[i-1];
 					c[j]=c[j]+1;
 					}
+			  // If current date is bigger than the previous then assign to X(d) and Y(count) values of the graph. 
+			  // Further initialize the c[j] value to zero since the new date will have new count.
 			  else if(temp_date[i-1]>temp_date[i-2])	
 				{
 					d = plot_date[j];
@@ -162,13 +166,13 @@
 					j++;
 					c[j] = 0;
 				}
+			  // Rare case, just set the c value to 0
 				else
 				{
 					c[j] = 0;
 				}
 			
 			}
-
 			console.log("count:" +count);
 	 
 			//Adding Tweets
