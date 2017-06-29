@@ -129,7 +129,7 @@
 		// The keyword Entered
 		query = $('#query').val();
 		if (!!window.EventSource) {
-		  var source = new EventSource('Twitter_stream.php?query='+query);
+		  var source = new EventSource('twitter_stream.php?query='+query);
 		} else {
 		  console.log("Error");
 		}
