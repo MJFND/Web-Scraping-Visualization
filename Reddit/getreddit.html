@@ -1,0 +1,164 @@
+<!-- 
+Created by: Junaid Effendi
+Description: Scrapping Reddit Api for Data Analysis
+See more: www.tensorflowhub.org
+
+-->
+
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script src="https://code.highcharts.com/stock/highstock.js"></script>
+	<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+<body>
+	<style>
+		#reddit{
+		display:block;
+		width:100%;
+		height:70%;
+		overflow-y: auto;
+		border:1px solid blue;
+		font-size:16px;
+		}
+		#reddit p{
+		border:1px dotted gray;
+		}
+		#container{
+		border:1px solid blue;
+		}
+	</style>
+		
+	<div class="col-sm-4">
+		<h1>Reddit</h1>
+		<label>Enter Query:</label>
+		<input type="text" id="query"/> 
+		<input id="go" type="submit" value="Go"/>
+		<br><br>
+		<!-- Reddit container -->
+		<div id="reddit"></div>
+	</div>
+	
+	<div class="col-sm-8">
+		<h1>Visualization</h1>
+		<!-- Chart container -->
+		<div id="container" style="height: 400px; min-width: 310px"></div>
+	</div>
+
+	<script>
+	// Some useful Reddit Api URLs
+	// https://www.reddit.com/r/all/comments/.json?limit=100
+	// https://www.reddit.com/search.json?q=bitcoin
+	// https://www.reddit.com/search.json?sort=new&q=(and%20%22boston%22%20(and+timestamp%3A1420070400..1425168000))&restrict_sr=on&syntax=cloudsearch
+
+		 
+		i=0;
+		mydata = new Array();
+		
+		let set = new Set();
+		 
+	$("#go").click(function(e){
+		//Fetches after every 5 seconds
+		setInterval(function() { getdata(); },5000);
+		
+		function getdata()
+		{   mydata_grouped = [[]];
+			query = $('#query').val();
+			
+			$.getJSON('https://www.reddit.com/search.json?q='+query+'&sort=new&limit=100', function (data) {
+					data = data.data.children;
+					data[0].data.created_utc = 0;
+					//console.log(data);
+					for(i=1; i< data.length ;i++)
+						{
+									//By Minutes, Removing Second from the Full Date/Time
+									d = (new Date(data[i].data.created_utc * 1000));
+									d = d.toString();
+									d = d.replace(/:\d\d([ ap]|$)/,'$1');
+									//console.log(data[i].data.id);
+								
+
+							if(!set.has(data[i].data.id))		
+								{
+									set.add(data[i].data.id);
+									mydata.push([
+												Date.parse(new Date(d)),
+												1
+											]);
+									
+									
+									//Adding Reddits
+									$("#reddit").prepend("<p>Title: "+data[i].data.title+
+														"<br />Text: "+(data[i].data.selftext)+
+														"<br />Author: "+data[i].data.author+
+														"<br />Url: "+data[i].data.url+
+														"<br />Created at: "+new Date(data[i].data.created_utc * 1000));
+								
+								}
+						}						
+						
+						
+				mydata_grouped = sum(mydata);
+				mydata_grouped.sort(sortFunction);
+				console.log(mydata_grouped);
+				//Function Call to plot graph		
+				createplot();
+															
+				});
+		}
+	});	
+
+
+	// Transformation of data
+	function sum(a) {
+	  return a.filter(([key, num], idx) => {
+		var first = a.findIndex(([key2]) => key === key2);
+		if (first === idx) return true;
+		a[first][1] += num;
+	  });
+	}	
+
+	function sortFunction(a, b) {
+		if (a[0] === b[0]) {
+			return 0;
+		}
+		else {
+			return (a[0] < b[0]) ? -1 : 1;
+		}
+	}
+			
+			
+	function createplot(){	
+
+		Highcharts.setOptions({
+				global: {
+					useUTC: false
+				}
+			});
+
+
+			// Create the chart
+		Highcharts.stockChart('container', {
+			rangeSelector: {
+					buttons: [
+					{
+						type: 'all',
+						text: 'All'
+					}],
+					inputEnabled: false,
+					selected: 0
+					},
+	  
+			series: [{
+					name: 'No. of Reddits per given time',
+					data: mydata_grouped
+				}]
+				});	
+			
+			 }
+
+	</script>
+</html>
