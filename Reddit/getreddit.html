@@ -91,7 +91,7 @@ See more: www.tensorflowhub.org
 									
 									
 									//Adding Reddits
-									$("#reddit").prepend("<p>Title: "+data[i].data.title+
+									$("#reddit").append("<p>Title: "+data[i].data.title+
 														"<br />Text: "+(data[i].data.selftext)+
 														"<br />Author: "+data[i].data.author+
 														"<br />Url: "+data[i].data.url+
@@ -101,9 +101,9 @@ See more: www.tensorflowhub.org
 						}						
 						
 						
-				mydata_grouped = sum(mydata);
-				mydata_grouped.sort(sortFunction);
-				console.log(mydata_grouped);
+				mydata = sum(mydata);
+				mydata.sort(sortFunction);
+				console.log(mydata);
 				//Function Call to plot graph		
 				createplot();
 															
