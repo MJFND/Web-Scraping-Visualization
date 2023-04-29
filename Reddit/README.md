@@ -1,2 +1,2 @@
 <h1>Scraping Reddit API</h1><br />
-Read more here at <a href="https://blog.junaideffendi.com/search/label/Scrapping">JunaidEffendi</a>
+Read more here at <a href="https://www.junaideffendi.com/tag/streaming/">JunaidEffendi</a>
